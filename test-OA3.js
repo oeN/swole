@@ -31,6 +31,28 @@ test('200 get', function (t) {
   })
 })
 
+test('200 get with object parameters', function (t) {
+  t.plan(3)
+
+  const router = Swole(fixtures['basic_OA3'], {
+    handlers: {
+      get: function (req, res, callback) {
+        t.deepEqual(req.query, {foo: {bar: 'bar', baz: 'baz'}}, 'receives parsed query')
+        json(res, {status: 'ok'})
+        callback()
+      },
+      post: t.fail.bind(t)
+    }
+  })
+
+  inject(partialRight(router, (err) => err && t.end(err)), {url: '/objects_in_get?foo[bar]=bar&foo[baz]=baz'}, function (response) {
+    t.equal(response.statusCode, 200, 'responds with 200')
+    t.deepEqual(JSON.parse(response.payload), {
+      status: 'ok'
+    }, 'responds with {status: String}')
+  })
+})
+
 test('200 post', function (t) {
   t.plan(3)
 

@@ -8,6 +8,7 @@ const extend = require('xtend')
 const map = require('map-obj')
 const safeJson = require('safe-json-parse/callback')
 const TypedError = require('error/typed')
+const qs = require('qs')
 
 module.exports = Validate
 
@@ -54,7 +55,7 @@ function Parameters (parameters, data) {
   return function validateParameters (req, pathParams, callback) {
     parse({
       path: pathParams,
-      query: url.parse(req.url, true).query,
+      query: qs.parse(url.parse(req.url, true).query),
       headers: req.headers
     }, onValidate)
 

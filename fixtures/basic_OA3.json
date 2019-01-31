@@ -58,6 +58,30 @@
         }
       }
     },
+    "/objects_in_get": {
+      "get": {
+        "x-handler": "get",
+        "parameters": [
+          {
+            "name": "foo",
+            "in": "query",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "bar": { "type": "string" },
+                "baz": { "type": "string" }
+              }
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "It's a response, ya happy?"
+          }
+        }
+      }
+    },
     "/paramless": {
       "get": {
         "x-handler": "get",
