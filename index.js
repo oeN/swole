@@ -59,6 +59,7 @@ function createRoutes (router, swagger, options) {
 
     return function handle (req, res, route, callback) {
       series([
+        partial(authorize, req, data, options.securityHandler, swagger.components),
         partial(identify, req, path, data),
         partial(validate.deprecated, req, res),
         partial(validate.parameters, req, route.params),
@@ -69,6 +70,23 @@ function createRoutes (router, swagger, options) {
       ], callback)
     }
   }
+}
+
+function authorize(req, data, handler, components, callback) {
+  if (!data.security) return callback()
+
+  assert.equal(typeof handler, 'function', 'securityHandler must be passed in the options')
+  const securityMethods = data.security.reduce((memo, securityMethod) => {
+    const key = Object.keys(securityMethod)[0]
+    memo[key] = {
+      scopes: securityMethod[key],
+      data: components.securitySchemes[key]
+    }
+    return memo
+  }, {})
+  handler(req, securityMethods)
+    .then(() => callback())
+    .catch(err => callback(err))
 }
 
 function identify (req, path, operation, callback) {
